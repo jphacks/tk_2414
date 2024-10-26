@@ -10,6 +10,7 @@ List<RouteBase> get $appRoutes => [
       $errorRoute,
       $customStatefulShellRoute,
       $lectureRoute,
+      $displaySavedImageRoute,
     ];
 
 RouteBase get $errorRoute => GoRouteData.$route(
@@ -172,6 +173,33 @@ extension $LectureRouteExtension on LectureRoute {
 
   String get location => GoRouteData.$location(
         '/my-lecture/${Uri.encodeComponent(id)}/${Uri.encodeComponent(courseId)}/${Uri.encodeComponent(lectureId)}',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $displaySavedImageRoute => GoRouteData.$route(
+      path: '/my-lecture/:fileName',
+      name: 'DisplaySavedImage',
+      parentNavigatorKey: DisplaySavedImageRoute.$parentNavigatorKey,
+      factory: $DisplaySavedImageRouteExtension._fromState,
+    );
+
+extension $DisplaySavedImageRouteExtension on DisplaySavedImageRoute {
+  static DisplaySavedImageRoute _fromState(GoRouterState state) =>
+      DisplaySavedImageRoute(
+        fileName: state.pathParameters['fileName']!,
+      );
+
+  String get location => GoRouteData.$location(
+        '/my-lecture/${Uri.encodeComponent(fileName)}',
       );
 
   void go(BuildContext context) => context.go(location);

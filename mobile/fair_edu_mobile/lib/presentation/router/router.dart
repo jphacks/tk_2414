@@ -1,5 +1,6 @@
 import 'package:fair_edu_mobile/presentation/components/framework/loading/delay.dart';
 import 'package:fair_edu_mobile/presentation/components/framework/loading/progress.dart';
+import 'package:fair_edu_mobile/presentation/pages/display_save_image/display_save_image.dart';
 import 'package:fair_edu_mobile/presentation/pages/error/error.dart';
 import 'package:fair_edu_mobile/presentation/pages/home/home.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/lecture.dart';
@@ -271,6 +272,27 @@ class LectureRoute extends GoRouteData {
         ),
       );
 }
+
+@TypedGoRoute<DisplaySavedImageRoute>(
+  path: '/my-lecture/:fileName',
+  name: DisplaySavedImage.name,
+)
+class DisplaySavedImageRoute extends GoRouteData {
+  DisplaySavedImageRoute({required this.fileName});
+
+  final String fileName;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      _rootNavigatorKey;
+
+  @override
+  Page<void> buildPage(context, state) => customPageBuilder(
+        DisplaySavedImage(
+          fileName: fileName,
+        ),
+      );
+}
+
 
 
 // @TypedGoRoute<PatientRecordDetailRoute>(
