@@ -23,6 +23,19 @@ ToDo: 最終的なフローを記入する
 
 ToDo:この処理のコードは~へと保管されている。
 
+必要ライブラリ
+```
+selenium
+webdriver-manager
+beautifulsoup4
+pypdf
+PyAudio
+pillow 
+pandoc
+```
+
+
+
 ## 読み上げ音声の自動作成について
 具体的な教材生成に関する試作や最終案についてはgenerate_audiofile.ipynb内に書かれているドキュメントを参照してください。
 
