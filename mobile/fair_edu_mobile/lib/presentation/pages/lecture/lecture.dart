@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:fair_edu_mobile/domain/model/entity/head_line.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/components/headLine.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/controller.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -13,8 +13,8 @@ import 'package:scribble/scribble.dart';
 import 'package:uuid/uuid.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-const types.User mockUser = types.User(id: 'user-1', firstName: 'John');
-final List<types.Message> mockMessages = [
+const types.User mockUser = types.User(id: 'user-1', firstName: 'user');
+final List<types.TextMessage> mockMessages = [
   types.TextMessage(
     author: const types.User(id: 'user-1', firstName: 'John'),
     createdAt: DateTime.now().millisecondsSinceEpoch - 10000,
@@ -71,6 +71,13 @@ class LectureScreen extends HookConsumerWidget {
       lectureId: UuidValue.fromString("lec11"),
     ));
     final asyncGetMaterial = ref.watch(GetMaterialListControllerProvider(
+      lectureId: UuidValue.fromString("lec11"),
+    ));
+
+    final chatToDisplay = useState<List<types.TextMessage>>(mockMessages);
+
+    final chatListAsync = ref.watch(ListChatControllerProvider(
+      userId: UuidValue.fromString("chat11"),
       lectureId: UuidValue.fromString("lec11"),
     ));
 
@@ -181,138 +188,141 @@ class LectureScreen extends HookConsumerWidget {
           ),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(color: Colors.white),
-              padding: const EdgeInsets.all(16.0),
-              child: () {
-                switch (asyncGetMaterial) {
-                  case AsyncData(:final value):
-                    if (value.isEmpty) {
-                      return const Center(child: Text("データがありません"));
-                    }
+                decoration: const BoxDecoration(color: Colors.white),
+                padding: const EdgeInsets.all(16.0),
+                child: switch (asyncGetMaterial) {
+                  AsyncValue(:final value) when value != null => switch (
+                        chatListAsync) {
+                      AsyncValue(value: final dataList, isLoading: false)
+                          when dataList != null =>
+                        Stack(
+                          children: [
+                            Listener(
+                              onPointerDown: (event) {
+                                if (event.kind == PointerDeviceKind.touch) {
+                                  scribbleController.value.onPointerDown(event);
+                                }
+                              },
+                              onPointerMove: (event) {
+                                if (event.kind == PointerDeviceKind.touch) {
+                                  scribbleController.value
+                                      .onPointerUpdate(event);
+                                }
+                              },
+                              onPointerUp: (event) {
+                                if (event.kind == PointerDeviceKind.touch) {
+                                  scribbleController.value.onPointerUp(event);
+                                }
+                              },
+                              child: Stack(
+                                children: [
+                                  SingleChildScrollView(
+                                    controller: scrollController,
+                                    child: Stack(
+                                      children: [
+                                        Column(
+                                          children:
+                                              svgXmlList.value.map((svgXml) {
+                                            final viewBoxMatch = RegExp(
+                                                    r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
+                                                .firstMatch(svgXml);
+                                            double? svgHeight;
 
-                    return Stack(
-                      children: [
-                        Listener(
-                          onPointerDown: (event) {
-                            if (event.kind == PointerDeviceKind.touch) {
-                              scribbleController.value.onPointerDown(event);
-                            }
-                          },
-                          onPointerMove: (event) {
-                            if (event.kind == PointerDeviceKind.touch) {
-                              scribbleController.value.onPointerUpdate(event);
-                            }
-                          },
-                          onPointerUp: (event) {
-                            if (event.kind == PointerDeviceKind.touch) {
-                              scribbleController.value.onPointerUp(event);
-                            }
-                          },
-                          child: Stack(
-                            children: [
-                              SingleChildScrollView(
-                                controller: scrollController,
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      children: svgXmlList.value.map((svgXml) {
-                                        final viewBoxMatch = RegExp(
-                                                r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
-                                            .firstMatch(svgXml);
-                                        double? svgHeight;
+                                            if (viewBoxMatch != null) {
+                                              final widthInViewBox =
+                                                  double.tryParse(
+                                                      viewBoxMatch.group(3)!);
+                                              final heightInViewBox =
+                                                  double.tryParse(
+                                                      viewBoxMatch.group(4)!);
 
-                                        if (viewBoxMatch != null) {
-                                          final widthInViewBox =
-                                              double.tryParse(
-                                                  viewBoxMatch.group(3)!);
-                                          final heightInViewBox =
-                                              double.tryParse(
-                                                  viewBoxMatch.group(4)!);
+                                              if (widthInViewBox != null &&
+                                                  heightInViewBox != null) {
+                                                final aspectRatio =
+                                                    heightInViewBox /
+                                                        widthInViewBox;
+                                                final webViewWidth =
+                                                    screenWidth * 0.9;
 
-                                          if (widthInViewBox != null &&
-                                              heightInViewBox != null) {
-                                            final aspectRatio =
-                                                heightInViewBox /
-                                                    widthInViewBox;
-                                            final webViewWidth =
-                                                screenWidth * 0.9;
+                                                svgHeight = webViewWidth *
+                                                    aspectRatio /
+                                                    2;
+                                              }
+                                            }
 
-                                            svgHeight =
-                                                webViewWidth * aspectRatio / 2;
-                                          }
-                                        }
+                                            svgHeight ??= 300;
 
-                                        svgHeight ??= 300;
+                                            final webViewController =
+                                                WebViewController()
+                                                  ..setJavaScriptMode(
+                                                      JavaScriptMode
+                                                          .unrestricted)
+                                                  ..loadRequest(
+                                                    Uri.dataFromString(
+                                                      svgXml,
+                                                      mimeType: 'text/html',
+                                                      encoding:
+                                                          Encoding.getByName(
+                                                              'utf-8'),
+                                                    ),
+                                                  );
 
-                                        final webViewController =
-                                            WebViewController()
-                                              ..setJavaScriptMode(
-                                                  JavaScriptMode.unrestricted)
-                                              ..loadRequest(
-                                                Uri.dataFromString(
-                                                  svgXml,
-                                                  mimeType: 'text/html',
-                                                  encoding: Encoding.getByName(
-                                                      'utf-8'),
-                                                ),
-                                              );
-
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 24.0,
-                                                horizontal: 16.0),
-                                            width: screenWidth,
-                                            height: svgHeight,
-                                            child: WebViewWidget(
-                                                controller: webViewController),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                    Positioned.fill(
-                                      child: SizedBox(
-                                        height: totalHeight,
-                                        child: Scribble(
-                                          notifier: scribbleController.value,
-                                          drawPen: true,
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8.0),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 24.0,
+                                                        horizontal: 16.0),
+                                                width: screenWidth,
+                                                height: svgHeight,
+                                                child: WebViewWidget(
+                                                    controller:
+                                                        webViewController),
+                                              ),
+                                            );
+                                          }).toList(),
                                         ),
-                                      ),
+                                        Positioned.fill(
+                                          child: SizedBox(
+                                            height: totalHeight,
+                                            child: Scribble(
+                                              notifier:
+                                                  scribbleController.value,
+                                              drawPen: true,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Positioned(
+                                    bottom: 100,
+                                    right: 20,
+                                    child: FloatingActionButton(
+                                      onPressed: scrollUp,
+                                      child: const Icon(Icons.arrow_upward),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 20,
+                                    right: 20,
+                                    child: FloatingActionButton(
+                                      onPressed: scrollDown,
+                                      child: const Icon(Icons.arrow_downward),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Positioned(
-                                bottom: 100,
-                                right: 20,
-                                child: FloatingActionButton(
-                                  onPressed: scrollUp,
-                                  child: const Icon(Icons.arrow_upward),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 20,
-                                right: 20,
-                                child: FloatingActionButton(
-                                  onPressed: scrollDown,
-                                  child: const Icon(Icons.arrow_downward),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    );
-
-                  case AsyncLoading():
-                    return const Center(child: CircularProgressIndicator());
-                  case AsyncError(:final error):
-                    return Center(child: Text("エラー: $error"));
-                }
-              }(),
-            ),
+                      _ => const Center(child: CircularProgressIndicator())
+                    },
+                  _ => const Center(child: CircularProgressIndicator())
+                }),
           ),
           AnimatedContainer(
             width: isRightSidebarOpen.value ? 400 : 0,
@@ -323,7 +333,7 @@ class LectureScreen extends HookConsumerWidget {
             child: isRightSidebarOpen.value
                 ? RightSidebarContent(
                     isSidebarOpen: isRightSidebarOpen.value,
-                    messages: mockMessages,
+                    messages: chatToDisplay.value,
                     user: mockUser,
                     onSendPressed: handleSendPressed,
                     onAttachmentPressed: handleAttachmentPressed,

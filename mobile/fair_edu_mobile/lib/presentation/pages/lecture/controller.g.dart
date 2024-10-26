@@ -338,5 +338,180 @@ class _GetMaterialListControllerProviderElement
   UuidValue get lectureId =>
       (origin as GetMaterialListControllerProvider).lectureId;
 }
+
+String _$listChatControllerHash() =>
+    r'70af203f147de7a3b1e76a7c34f79ac3d04a1fb5';
+
+abstract class _$ListChatController
+    extends BuildlessAutoDisposeAsyncNotifier<List<ChatEntity>> {
+  late final UuidValue userId;
+  late final UuidValue lectureId;
+
+  FutureOr<List<ChatEntity>> build({
+    required UuidValue userId,
+    required UuidValue lectureId,
+  });
+}
+
+/// See also [ListChatController].
+@ProviderFor(ListChatController)
+const listChatControllerProvider = ListChatControllerFamily();
+
+/// See also [ListChatController].
+class ListChatControllerFamily extends Family<AsyncValue<List<ChatEntity>>> {
+  /// See also [ListChatController].
+  const ListChatControllerFamily();
+
+  /// See also [ListChatController].
+  ListChatControllerProvider call({
+    required UuidValue userId,
+    required UuidValue lectureId,
+  }) {
+    return ListChatControllerProvider(
+      userId: userId,
+      lectureId: lectureId,
+    );
+  }
+
+  @override
+  ListChatControllerProvider getProviderOverride(
+    covariant ListChatControllerProvider provider,
+  ) {
+    return call(
+      userId: provider.userId,
+      lectureId: provider.lectureId,
+    );
+  }
+
+  static final Iterable<ProviderOrFamily> _dependencies = <ProviderOrFamily>[
+    listChatUseCaseProvider
+  ];
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
+      <ProviderOrFamily>{
+    listChatUseCaseProvider,
+    ...?listChatUseCaseProvider.allTransitiveDependencies
+  };
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'listChatControllerProvider';
+}
+
+/// See also [ListChatController].
+class ListChatControllerProvider extends AutoDisposeAsyncNotifierProviderImpl<
+    ListChatController, List<ChatEntity>> {
+  /// See also [ListChatController].
+  ListChatControllerProvider({
+    required UuidValue userId,
+    required UuidValue lectureId,
+  }) : this._internal(
+          () => ListChatController()
+            ..userId = userId
+            ..lectureId = lectureId,
+          from: listChatControllerProvider,
+          name: r'listChatControllerProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$listChatControllerHash,
+          dependencies: ListChatControllerFamily._dependencies,
+          allTransitiveDependencies:
+              ListChatControllerFamily._allTransitiveDependencies,
+          userId: userId,
+          lectureId: lectureId,
+        );
+
+  ListChatControllerProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+    required this.lectureId,
+  }) : super.internal();
+
+  final UuidValue userId;
+  final UuidValue lectureId;
+
+  @override
+  FutureOr<List<ChatEntity>> runNotifierBuild(
+    covariant ListChatController notifier,
+  ) {
+    return notifier.build(
+      userId: userId,
+      lectureId: lectureId,
+    );
+  }
+
+  @override
+  Override overrideWith(ListChatController Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: ListChatControllerProvider._internal(
+        () => create()
+          ..userId = userId
+          ..lectureId = lectureId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+        lectureId: lectureId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<ListChatController, List<ChatEntity>>
+      createElement() {
+    return _ListChatControllerProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ListChatControllerProvider &&
+        other.userId == userId &&
+        other.lectureId == lectureId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
+    hash = _SystemHash.combine(hash, lectureId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin ListChatControllerRef
+    on AutoDisposeAsyncNotifierProviderRef<List<ChatEntity>> {
+  /// The parameter `userId` of this provider.
+  UuidValue get userId;
+
+  /// The parameter `lectureId` of this provider.
+  UuidValue get lectureId;
+}
+
+class _ListChatControllerProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<ListChatController,
+        List<ChatEntity>> with ListChatControllerRef {
+  _ListChatControllerProviderElement(super.provider);
+
+  @override
+  UuidValue get userId => (origin as ListChatControllerProvider).userId;
+  @override
+  UuidValue get lectureId => (origin as ListChatControllerProvider).lectureId;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

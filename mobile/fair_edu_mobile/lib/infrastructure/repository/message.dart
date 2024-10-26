@@ -1,3 +1,4 @@
+import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/model/entity/message.dart';
 import 'package:fair_edu_mobile/domain/model/utils/utils.dart';
 import 'package:fair_edu_mobile/domain/repository/message.dart';
@@ -12,12 +13,12 @@ class MessageRepository implements IMessageRepository {
   final ChatApi _chatClient;
 
   @override
-  Future<List<UuidValue>> getChatIdList({
-    required UuidValue userId,
+  Future<List<ChatEntity>> getChatList({
+    required UuidValue chatId,
     required UuidValue lectureId,
   }) async {
     final chatIdList = await _chatClient.getChatsByUserIDAndLectureID(
-      userId.uuid,
+      chatId.uuid,
       lectureId.uuid,
     );
     print('ChatIdList: $chatIdList');
@@ -25,7 +26,19 @@ class MessageRepository implements IMessageRepository {
       return [];
     }
     return chatIdList.map((chat) {
-      return UuidValue.fromString(chat.chatId!);
+      return ChatEntity(
+        chatId: UuidValue.fromString(chat.chatId ?? ''),
+        segmentId: UuidValue.fromString(chat.segmentId ?? ''),
+        messages: chat.messages.map((message) {
+          return MessageEntity(
+            id: UuidValue.fromString(message.messageId ?? ''),
+            message: message.message ?? '',
+            chatId: UuidValue.fromString(chat.chatId ?? ''),
+            isUser: message.isUser ?? false,
+            createdAt: localDateTimeFromDateTimeJson(message.createdAt!),
+          );
+        }).toList(),
+      );
     }).toList();
   }
 

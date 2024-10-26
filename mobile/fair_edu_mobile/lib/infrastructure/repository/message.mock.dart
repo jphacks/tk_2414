@@ -1,3 +1,4 @@
+import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/model/entity/message.dart';
 import 'package:fair_edu_mobile/domain/repository/message.dart';
 import 'package:fair_edu_mobile/infrastructure/data/mock/fake.dart';
@@ -11,14 +12,15 @@ class MockMessageRepository implements IMessageRepository {
   final CustomFaker _faker;
 
   @override
-  Future<List<UuidValue>> getChatIdList({
-    required UuidValue userId,
+  Future<List<ChatEntity>> getChatList({
+    required UuidValue chatId,
     required UuidValue lectureId,
   }) async {
-    final chatIdList = List.generate(5, (index) {
-      return UuidValue.fromString(_faker.getId());
+    final chatList = List.generate(5, (index) {
+      return _faker.getChatEntity();
     });
-    return chatIdList;
+
+    return chatList;
   }
 
   @override
