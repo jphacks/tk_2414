@@ -8,7 +8,6 @@
 // ignore_for_file: constant_identifier_names
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
 // tests for RegisterProgressRequest
@@ -27,8 +26,5 @@ void main() {
     test('to test the property `userId`', () async {
       // TODO
     });
-
-
   });
-
 }
