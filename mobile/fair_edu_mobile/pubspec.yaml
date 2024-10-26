@@ -93,6 +93,10 @@ dependencies:
   # XML
   xml: ^6.1.0
 
+  # Fairedu Client
+  fairedu_client:
+    path: packages/fairedu-client
+
   # Scribble
   scribble:
     git:
