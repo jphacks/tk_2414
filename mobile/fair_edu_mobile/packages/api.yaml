@@ -1,0 +1,578 @@
+openapi: 3.0.0
+info:
+  title: Comprehensive Lecture and User Management API
+  version: 1.0.0
+  description: >
+    統合されたAPI仕様書で、講義構造、進捗管理、チャット、教材管理、講義、コース、ユーザー認証に関する機能を提供します。
+
+tags:
+  - name: Lecture Structure
+    description: 講義構造に関する操作
+  - name: Progress Management
+    description: 進捗管理に関する操作
+  - name: Chat
+    description: チャット機能に関する操作
+  - name: Material
+    description: 教材管理に関する操作
+  - name: Lecture
+    description: 講義に関する操作
+  - name: Course
+    description: コースに関する操作
+  - name: User Authentication
+    description: ユーザー認証に関する操作
+
+paths:
+  /structure/{lecture_id}:
+    get:
+      summary: Get lecture structure
+      operationId: getLectureStructure
+      tags:
+        - Lecture Structure
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lecture structure retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    str_type:
+                      type: string
+        "400":
+          description: Invalid lecture ID
+        "500":
+          description: Internal server error
+
+  /progress:
+    post:
+      summary: Register progress for a lecture
+      operationId: registerProgress
+      tags:
+        - Progress Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lecture_id:
+                  type: string
+                  description: ID of the lecture
+                user_id:
+                  type: string
+                  description: ID of the user
+      responses:
+        "200":
+          description: Progress registered successfully
+        "400":
+          description: Invalid input data
+        "500":
+          description: Internal server error
+
+  /progress/{user_id}:
+    get:
+      summary: Display progress for ongoing courses
+      operationId: displayOngoingProgress
+      tags:
+        - Progress Management
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the user
+      responses:
+        "200":
+          description: Progress retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    lecture_id:
+                      type: string
+                    name:
+                      type: string
+                    ratio:
+                      type: number
+                      format: float
+        "400":
+          description: Invalid user ID
+        "500":
+          description: Internal server error
+
+  /progress/{user_id}/{month}:
+    get:
+      summary: Calculate and return the learning volume for the month
+      operationId: getMonthlyLearningVolume
+      tags:
+        - Progress Management
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the user
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Month in format 'YYYY-MM'
+      responses:
+        "200":
+          description: Monthly learning volume retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lectures:
+                    type: integer
+                    description: Number of lectures completed
+                  courses:
+                    type: integer
+                    description: Number of courses completed
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        course_name:
+                          type: string
+                        lecture_name:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+        "400":
+          description: Invalid user ID or month format
+        "500":
+          description: Internal server error
+
+  # done
+  /message/{lecture_id}/{user_id}:
+    post:
+      summary: Send a chat message
+      operationId: ProcessMessage
+      tags:
+        - Chat
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chat_id:
+                  type: string
+                message:
+                  type: string
+      responses:
+        "200":
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_message:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      message:
+                        type: string
+                      chat_id:
+                        type: string
+                      is_user:
+                        type: boolean
+                      created_at:
+                        type: string
+                        format: date-time
+                  bot_message:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      message:
+                        type: string
+                      chat_id:
+                        type: string
+                      is_user:
+                        type: boolean
+                      created_at:
+                        type: string
+                        format: date-time
+        "400":
+          description: Invalid chat ID or message data
+        "500":
+          description: Internal server error
+  # done
+  /messages/chat/{chat_id}:
+    get:
+      summary: Get chat messages
+      operationId: getMessagesByChatID
+      tags:
+        - Chat
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Messages retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    is_user:
+                      type: boolean
+                    created_at:
+                      type: string
+                      format: date-time
+        "400":
+          description: Invalid chat ID
+        "500":
+          description: Internal server error
+
+  # done
+  /chats/{user_id}/{lecture_id}:
+    get:
+      summary: Get chat IDs by user ID and lecture ID
+      operationId: getChatsByUserIDAndLectureID
+      tags:
+        - Chat
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Chat IDs and related data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    chat_id:
+                      type: string
+                    segment_id:
+                      type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type: string
+                          message:
+                            type: string
+                          is_user:
+                            type: boolean
+                          created_at:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid user ID or lecture ID
+        "500":
+          description: Internal server error
+
+  /material/{lecture_id}/{user_id}:
+    post:
+      summary: Save material
+      operationId: saveMaterial
+      tags:
+        - Material
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  segment_id:
+                    type: string
+                  content:
+                    type: string
+      responses:
+        "200":
+          description: Material saved successfully
+        "400":
+          description: Invalid input data
+        "500":
+          description: Internal server error
+
+  /material/{lecture_id}:
+    get:
+      summary: Get materials for lecture
+      operationId: getMaterialsForLecture
+      tags:
+        - Material
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Materials retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    segment_id:
+                      type: string
+                    voice:
+                      type: string
+                    content:
+                      type: string
+        "400":
+          description: Invalid lecture ID
+        "500":
+          description: Internal server error
+
+  /lectures/{course_id}:
+    get:
+      summary: Get lectures for a course
+      operationId: getLecturesForCourse
+      tags:
+        - Lecture
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lectures retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    lecture_id:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+        "400":
+          description: Invalid course ID
+        "500":
+          description: Internal server error
+
+  /test/{lecture_id}:
+    get:
+      summary: Get quiz for a lecture
+      operationId: getQuizForLecture
+      tags:
+        - Lecture
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Test retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    choices:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          is_correct:
+                            type: boolean
+        "400":
+          description: Invalid lecture ID
+        "500":
+          description: Internal server error
+
+  /course/{user_id}/{status}:
+    get:
+      summary: Get courses based on status (all, taking, finished)
+      operationId: getCoursesByStatus
+      tags:
+        - Course
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [all, taking, finished]
+      responses:
+        "200":
+          description: Courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    course_id:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    grade_id:
+                      type: string
+                    subject:
+                      type: string
+                    level:
+                      type: string
+        "400":
+          description: Invalid user ID or status
+        "500":
+          description: Internal server error
+
+  /signup:
+    post:
+      summary: User signup with email and password
+      operationId: signupUser
+      tags:
+        - User Authentication
+      requestBody:
+        description: User signup information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - name
+                - email
+                - password
+      responses:
+        "201":
+          description: User successfully created
+        "400":
+          description: Invalid input data
+
+  /login:
+    post:
+      summary: User login with email and password
+      operationId: loginUser
+      tags:
+        - User Authentication
+      requestBody:
+        description: User login information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "400":
+          description: Invalid email or password
