@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:fair_edu_mobile/domain/model/entity/head_line.dart';
+import 'package:fair_edu_mobile/domain/model/entity/segment.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/components/headLine.dart';
+import 'package:fair_edu_mobile/presentation/pages/lecture/components/segment_card.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -62,10 +64,11 @@ class LectureScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLeftSidebarOpen = useState(true);
     final isRightSidebarOpen = useState(true);
+    final selectedSegment = useState<UuidValue?>(null);
     final scribbleController = useState(ScribbleNotifier());
     final ScrollController scrollController = useScrollController();
 
-    final svgXmlList = useState<List<String>>([]);
+    final svgXmlList = useState<List<SegmentEntity>>([]);
 
     final asyncGetHeadLine = ref.watch(ListHeadLineControllerProvider(
       lectureId: UuidValue.fromString("lec11"),
@@ -82,17 +85,24 @@ class LectureScreen extends HookConsumerWidget {
     ));
 
     useEffect(() {
+      scribbleController.value.setStrokeWidth(1.0); // ペンの細さを1に設定
+      return null; // cleanupは不要
+    }, []);
+
+    useEffect(() {
       switch (asyncGetMaterial) {
         case AsyncData(:final value):
           if (value.isNotEmpty) {
             svgXmlList.value = value.map((material) {
-              return '''
+              return material.copyWith(
+                content: '''
                 <html>
                   <body style="margin: 0; padding: 0;">
                     ${material.content} <!-- SVGデータを挿入 -->
                   </body>
                 </html>
-              ''';
+              ''',
+              );
             }).toList();
           }
           break;
@@ -107,29 +117,13 @@ class LectureScreen extends HookConsumerWidget {
     final mediaQueryData =
         MediaQueryData.fromView(WidgetsBinding.instance.window);
     final screenHeight = mediaQueryData.size.height;
-    final screenWidth = mediaQueryData.size.width;
-
-    void scrollDown() {
-      scrollController.animateTo(
-        scrollController.offset + screenHeight / 2,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-
-    void scrollUp() {
-      scrollController.animateTo(
-        scrollController.offset - screenHeight / 2,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
+    final screenWidth = mediaQueryData.size.width - 700;
 
     double totalHeight = 0;
     for (var svgXml in svgXmlList.value) {
       final viewBoxMatch =
           RegExp(r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
-              .firstMatch(svgXml);
+              .firstMatch(svgXml.content);
       double? svgHeight;
 
       if (viewBoxMatch != null) {
@@ -225,7 +219,7 @@ class LectureScreen extends HookConsumerWidget {
                                               svgXmlList.value.map((svgXml) {
                                             final viewBoxMatch = RegExp(
                                                     r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
-                                                .firstMatch(svgXml);
+                                                .firstMatch(svgXml.content);
                                             double? svgHeight;
 
                                             if (viewBoxMatch != null) {
@@ -244,9 +238,8 @@ class LectureScreen extends HookConsumerWidget {
                                                 final webViewWidth =
                                                     screenWidth * 0.9;
 
-                                                svgHeight = webViewWidth *
-                                                    aspectRatio /
-                                                    2;
+                                                svgHeight =
+                                                    webViewWidth * aspectRatio;
                                               }
                                             }
 
@@ -259,7 +252,7 @@ class LectureScreen extends HookConsumerWidget {
                                                           .unrestricted)
                                                   ..loadRequest(
                                                     Uri.dataFromString(
-                                                      svgXml,
+                                                      svgXml.content,
                                                       mimeType: 'text/html',
                                                       encoding:
                                                           Encoding.getByName(
@@ -267,21 +260,21 @@ class LectureScreen extends HookConsumerWidget {
                                                     ),
                                                   );
 
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 24.0,
-                                                        horizontal: 16.0),
-                                                width: screenWidth,
-                                                height: svgHeight,
-                                                child: WebViewWidget(
-                                                    controller:
-                                                        webViewController),
-                                              ),
+                                            return SegmentCard(
+                                              webViewController:
+                                                  webViewController,
+                                              screenWidth: screenWidth,
+                                              svgHeight: svgHeight,
+                                              audioUrl: Uri.parse(
+                                                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
+                                              onSelect: () {},
+                                              isSelected:
+                                                  selectedSegment.value ==
+                                                      svgXml.id,
+                                              hasMessage: dataList.any(
+                                                  (chatEntity) =>
+                                                      chatEntity.segmentId ==
+                                                      svgXml.id),
                                             );
                                           }).toList(),
                                         ),
@@ -292,26 +285,11 @@ class LectureScreen extends HookConsumerWidget {
                                               notifier:
                                                   scribbleController.value,
                                               drawPen: true,
+                                              simulatePressure: false,
                                             ),
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 100,
-                                    right: 20,
-                                    child: FloatingActionButton(
-                                      onPressed: scrollUp,
-                                      child: const Icon(Icons.arrow_upward),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 20,
-                                    right: 20,
-                                    child: FloatingActionButton(
-                                      onPressed: scrollDown,
-                                      child: const Icon(Icons.arrow_downward),
                                     ),
                                   ),
                                 ],
