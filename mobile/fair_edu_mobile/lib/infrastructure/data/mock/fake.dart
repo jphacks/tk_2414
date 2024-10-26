@@ -1,3 +1,4 @@
+import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/model/entity/head_line.dart';
 import 'package:fair_edu_mobile/domain/model/entity/message.dart';
 import 'package:fair_edu_mobile/domain/model/entity/segment.dart';
@@ -79,5 +80,13 @@ class CustomFaker {
         chatId: getUuidValue(),
         isUser: getBool(),
         createdAt: getLocalDateTime(),
+      );
+
+  ChatEntity getChatEntity() => ChatEntity(
+        chatId: getUuidValue(),
+        segmentId: getUuidValue(),
+        messages: List.generate(5, (index) {
+          return getMessageEntity();
+        }),
       );
 }

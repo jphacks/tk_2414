@@ -1,14 +1,15 @@
+import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/model/entity/message.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class IMessageRepository {
-  //MEMO 授業ごとに全てのチャットのIDのリストを取得する
-  Future<List<UuidValue>> getChatIdList({
-    required UuidValue userId,
+  //?MEMO lecture_idに紐づくmessageデータを取得する
+  Future<List<ChatEntity>> getChatList({
+    required UuidValue chatId,
     required UuidValue lectureId,
   });
 
-  //MEMO チャットIdwを指定してチャットのメッセージリストを取得する
+  //?MEMO これは不要
   Future<List<MessageEntity>> getMessageList({
     required UuidValue chatId,
   });

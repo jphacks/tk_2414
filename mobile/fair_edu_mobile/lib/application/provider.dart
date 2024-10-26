@@ -52,7 +52,7 @@ IGetMessageUseCase getMessageUseCase(GetMessageUseCaseRef ref) {
 
 @Riverpod(
   dependencies: [
-    lectureRepository,
+    messageRepository,
   ],
 )
 IPostMessageUseCase postMessageUseCase(PostMessageUseCaseRef ref) {

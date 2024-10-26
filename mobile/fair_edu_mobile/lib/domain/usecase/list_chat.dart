@@ -1,10 +1,11 @@
+import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/repository/message.dart';
 import 'package:fair_edu_mobile/domain/utils/utils.dart';
 import 'package:fair_edu_mobile/helper/logger.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class IListChatUseCase {
-  Future<List<UuidValue>> execute({
+  Future<List<ChatEntity>> execute({
     required UuidValue userId,
     required UuidValue lectureId,
   });
@@ -18,7 +19,7 @@ class ListChatUseCase implements IListChatUseCase {
   final IMessageRepository _messageRepository;
 
   @override
-  Future<List<UuidValue>> execute({
+  Future<List<ChatEntity>> execute({
     required UuidValue userId,
     required UuidValue lectureId,
   }) async {
@@ -28,8 +29,8 @@ class ListChatUseCase implements IListChatUseCase {
     return useCaseExceptionLogger(
       logger: logger,
       action: () async {
-        return await _messageRepository.getChatIdList(
-          userId: userId,
+        return await _messageRepository.getChatList(
+          chatId: userId,
           lectureId: lectureId,
         );
       },

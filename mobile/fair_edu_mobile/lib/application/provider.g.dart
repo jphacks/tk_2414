@@ -85,7 +85,7 @@ final getMessageUseCaseProvider =
 
 typedef GetMessageUseCaseRef = AutoDisposeProviderRef<IGetMessageUseCase>;
 String _$postMessageUseCaseHash() =>
-    r'2905d95578bf9be76e6a4f2edc04b7b7dbb38f70';
+    r'e165c47dcf43ccf542fd7e4a77d447e9dbe8d7b0';
 
 /// See also [postMessageUseCase].
 @ProviderFor(postMessageUseCase)
@@ -96,10 +96,10 @@ final postMessageUseCaseProvider =
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$postMessageUseCaseHash,
-  dependencies: <ProviderOrFamily>[lectureRepositoryProvider],
+  dependencies: <ProviderOrFamily>[messageRepositoryProvider],
   allTransitiveDependencies: <ProviderOrFamily>{
-    lectureRepositoryProvider,
-    ...?lectureRepositoryProvider.allTransitiveDependencies
+    messageRepositoryProvider,
+    ...?messageRepositoryProvider.allTransitiveDependencies
   },
 );
 
