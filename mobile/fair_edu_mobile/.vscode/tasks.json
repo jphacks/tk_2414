@@ -1,0 +1,106 @@
+{
+  "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "stage",
+      "type": "pickString",
+      "description": "Stage",
+      "options": [
+        // {
+        //   "value": "dev"
+        // },
+        // {
+        //   "value": "stg"
+        // },
+        {
+          "value": "prod"
+        }
+      ]
+    },
+    {
+      "id": "part",
+      "type": "pickString",
+      "description": "Release Part",
+      "options": [
+        {
+          "value": "patch"
+        },
+        {
+          "value": "minor"
+        },
+        {
+          "value": "major"
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "label": "build_runner",
+      "type": "flutter",
+      "command": "dart",
+      "args": ["run", "build_runner", "build", "-d"],
+      "problemMatcher": ["$dart-build_runner"]
+    },
+    {
+      "group": "none",
+      "label": "Build App Icons",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/build_app_icons.sh"],
+      "problemMatcher": []
+    },
+    {
+      "group": "none",
+      "label": "Build Splash Screen",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/build_app_splash.sh", "${input:stage}"],
+      "problemMatcher": []
+    },
+    {
+      "group": "none",
+      "label": "build_env",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/build_env.sh", "${input:stage}"],
+      "problemMatcher": []
+    },
+    {
+      "group": "none",
+      "label": "Build app",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/build_app.sh", "${input:stage}"],
+      "problemMatcher": []
+    },
+    {
+      "group": "none",
+      "label": "Build ipa",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/build_ipa.sh", "${input:stage}"],
+      "problemMatcher": []
+    },
+    {
+      "group": "none",
+      "label": "Build appbundle",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/build_appbundle.sh", "${input:stage}"],
+      "problemMatcher": []
+    },
+    {
+      "group": "none",
+      "label": "Release version",
+      "type": "shell",
+      "command": "sh",
+      "args": ["script/version.sh", "${input:part}"],
+      "problemMatcher": []
+    }
+  ]
+}
