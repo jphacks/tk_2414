@@ -1,8 +1,4 @@
-import 'dart:io';
-
-import 'package:drift/native.dart';
 import 'package:fair_edu_mobile/app.dart';
-import 'package:fair_edu_mobile/infrastructure/data/drift/database.dart'; // AppDatabase をインポート
 import 'package:fair_edu_mobile/infrastructure/data/mock/fake.dart';
 import 'package:fair_edu_mobile/infrastructure/provider.dart';
 import 'package:fair_edu_mobile/infrastructure/repository/message.mock.dart';
@@ -12,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:time_machine/time_machine.dart';
 
 Future<void> main() async {
@@ -23,7 +18,7 @@ Future<void> main() async {
   );
 
   // データベースの初期化
-  final _ = await _initializeDatabase();
+  // final _ = await _initializeDatabase();
 
   await Future.wait<dynamic>(
     [
@@ -64,10 +59,10 @@ Future<void> _initializeFirebase(WidgetsBinding widgetsBinding) async {
   // Firebaseの初期化を行う
 }
 
-/// データベースの初期化処理
-Future<AppDatabase> _initializeDatabase() async {
-  final dbFolder =
-      await getApplicationDocumentsDirectory(); // データベースファイルを保存する場所を取得
-  final dbFile = File('${dbFolder.path}/fair_edu.db'); // データベースファイル名を設定
-  return AppDatabase(NativeDatabase(dbFile)); // NativeDatabaseを使ってデータベース接続
-}
+// /// データベースの初期化処理
+// Future<AppDatabase> _initializeDatabase() async {
+//   final dbFolder =
+//       await getApplicationDocumentsDirectory(); // データベースファイルを保存する場所を取得
+//   final dbFile = File('${dbFolder.path}/fair_edu.db'); // データベースファイル名を設定
+//   return AppDatabase(NativeDatabase(dbFile)); // NativeDatabaseを使ってデータベース接続
+// }
