@@ -2,7 +2,7 @@ name: fair_edu_mobile
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -30,11 +30,74 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # Cupertino Icons
   cupertino_icons: ^1.0.8
+
+  # Riverpod
+  hooks_riverpod: 2.5.2
+  flutter_hooks: 0.20.5
+  collection: 1.18.0
+
+  # Fonts
+  google_fonts: 6.2.1
+
+  # Navigation
+  go_router: 14.2.6
+  phosphor_flutter: ^2.1.0
+  recase: 4.1.0
+
+  # Form Validation
+  form_field_validator: 1.1.0
+
+  # Utilities
+  gap: 3.0.1
+  phone_numbers_parser: 9.0.1
+  intersperse: 2.0.0
+  loading_animation_widget: 1.3.0
+
+  # Time
+  time_machine: 0.9.17
+
+  # Annotations
+  freezed_annotation: 2.4.4
+  json_annotation: 4.9.0
+  riverpod_annotation: 2.3.5
+
+  # Media
+  image_picker: 1.1.2
+  path_provider: 2.1.4
+  flutter_svg: 2.0.10
+
+  # Logging
+  logger: 2.4.0
+
+  # Chat UI
+  flutter_chat_ui: 1.6.15
+
+  # Database
+  drift: ^2.21.0
+
+  # UUID
+  uuid: 4.5.1
+
+  # Faker
+  faker: 2.2.0
+
+  # WebView
+  webview_flutter: ^4.0.6
+  webview_flutter_wkwebview: ^3.16.0
+
+  # XML
+  xml: ^6.1.0
+
+  # Scribble
+  scribble:
+    git:
+      url: git@github.com:doss-eeic/2024-07-scribble.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
@@ -45,14 +108,31 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  # Lint
+  flutter_lints: 4.0.0
+  custom_lint: 0.6.5
+  riverpod_lint: 2.3.13
+
+  # Code Generation
+  build_runner: 2.4.12
+  envied_generator: 0.5.4
+  freezed: 2.5.7
+  json_serializable: 6.8.0
+  riverpod_generator: 2.4.3
+  go_router_builder: 2.7.1
+  drift_dev: ^2.21.0
+
+  # Icons
+  flutter_launcher_icons: 0.13.1
+
+  # Assets
+  flutter_gen_runner: 5.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
