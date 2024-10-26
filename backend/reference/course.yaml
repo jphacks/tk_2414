@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: Course API
+  version: 1.0.0
+
+paths:
+  /course/{user_id}/{status}:
+    get:
+      summary: Get courses based on status (all, taking, finished)
+      operationId: getCoursesByStatus
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [all, taking, finished]
+      responses:
+        '200':
+          description: Courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    course_id:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    grade_id:
+                      type: string
+                    subject:
+                      type: string
+                    level:
+                      type: string
+        '400':
+          description: Invalid user ID or status
+        '500':
+          description: Internal server error

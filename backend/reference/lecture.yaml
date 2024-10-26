@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Lecture API
+  version: 1.0.0
+
+paths:
+  /lectures/{course_id}:
+    get:
+      summary: Get lectures for a course
+      operationId: getLecturesForCourse
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lectures retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    lecture_id:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+        '400':
+          description: Invalid course ID
+        '500':
+          description: Internal server error
+
+  /test/{lecture_id}:
+    get:
+      summary: Get quiz for a lecture
+      operationId: getQuizForLecture
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    choices:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          is_correct:
+                            type: boolean
+        '400':
+          description: Invalid lecture ID
+        '500':
+          description: Internal server error

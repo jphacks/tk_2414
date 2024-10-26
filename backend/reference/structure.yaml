@@ -1,0 +1,34 @@
+openapi: 3.0.0
+info:
+  title: Lecture Structure API
+  version: 1.0.0
+
+paths:
+  /structure/{lecture_id}:
+    get:
+      summary: Get lecture structure
+      operationId: getLectureStructure
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lecture structure retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    str_type:
+                      type: string
+        '400':
+          description: Invalid lecture ID
+        '500':
+          description: Internal server error

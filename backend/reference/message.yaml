@@ -1,0 +1,152 @@
+openapi: 3.0.0
+info:
+  title: Chat API
+  version: 1.0.0
+
+paths:
+  /message/{lecture_id}/{user_id}:
+    post:
+      summary: Send a chat message
+      operationId: ProcessMessage
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chat_id:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_message:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      message:
+                        type: string
+                      chat_id:
+                        type: string
+                      is_user:
+                        type: boolean
+                      created_at:
+                        type: string
+                        format: date-time
+                  bot_message:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      message:
+                        type: string
+                      chat_id:
+                        type: string
+                      is_user:
+                        type: boolean
+                      created_at:
+                        type: string
+                        format: date-time
+        '400':
+          description: Invalid chat ID or message data
+        '500':
+          description: Internal server error
+
+# 作ったは良いけど一個下のものが良いので使わない
+  /messages/chat/{chat_id}:
+    get:
+      summary: Get chat messages
+      operationId: getMessagesByChatID
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Messages retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    is_user:
+                      type: boolean
+                    created_at:
+                      type: string
+                      format: date-time
+        '400':
+          description: Invalid chat ID
+        '500':
+          description: Internal server error
+  /chats/{user_id}/{lecture_id}:
+    get:
+      summary: Get chat IDs by user ID and lecture ID
+      operationId: getChatsByUserIDAndLectureID
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Chat IDs and related data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    chat_id:
+                      type: string
+                    segment_id:
+                      type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type: string
+                          message:
+                            type: string
+                          is_user:
+                            type: boolean
+                          created_at:
+                            type: string
+                            format: date-time
+        '400':
+          description: Invalid user ID or lecture ID
+        '500':
+          description: Internal server error
