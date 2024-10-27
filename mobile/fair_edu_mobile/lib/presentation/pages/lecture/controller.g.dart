@@ -513,5 +513,24 @@ class _ListChatControllerProviderElement
   @override
   UuidValue get lectureId => (origin as ListChatControllerProvider).lectureId;
 }
+
+String _$postMessageHash() => r'beaf327dd7bc688838b3f30bc96b54bb8161cbbe';
+
+/// See also [PostMessage].
+@ProviderFor(PostMessage)
+final postMessageProvider =
+    AutoDisposeAsyncNotifierProvider<PostMessage, void>.internal(
+  PostMessage.new,
+  name: r'postMessageProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$postMessageHash,
+  dependencies: <ProviderOrFamily>[postMessageUseCaseProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    postMessageUseCaseProvider,
+    ...?postMessageUseCaseProvider.allTransitiveDependencies
+  },
+);
+
+typedef _$PostMessage = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

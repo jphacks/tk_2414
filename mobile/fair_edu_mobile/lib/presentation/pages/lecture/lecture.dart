@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:fair_edu_mobile/domain/model/entity/head_line.dart';
+import 'package:fair_edu_mobile/domain/model/entity/segment.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/components/headLine.dart';
+import 'package:fair_edu_mobile/presentation/pages/lecture/components/segment_card.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/controller.dart';
+import 'package:fair_edu_mobile/presentation/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -16,16 +19,16 @@ import 'package:webview_flutter/webview_flutter.dart';
 const types.User mockUser = types.User(id: 'user-1', firstName: 'user');
 final List<types.TextMessage> mockMessages = [
   types.TextMessage(
-    author: const types.User(id: 'user-1', firstName: 'John'),
-    createdAt: DateTime.now().millisecondsSinceEpoch - 10000,
-    id: const Uuid().v4(),
-    text: 'Hello! How can I assist you today?',
-  ),
-  types.TextMessage(
     author: const types.User(id: 'user-2', firstName: 'Support Agent'),
     createdAt: DateTime.now().millisecondsSinceEpoch - 5000,
     id: const Uuid().v4(),
     text: 'I have a question about my lecture notes.',
+  ),
+  types.TextMessage(
+    author: const types.User(id: 'user-1', firstName: 'John'),
+    createdAt: DateTime.now().millisecondsSinceEpoch + 10000,
+    id: const Uuid().v4(),
+    text: 'Hello! How can I assist you today?',
   ),
 ];
 
@@ -62,10 +65,11 @@ class LectureScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLeftSidebarOpen = useState(true);
     final isRightSidebarOpen = useState(true);
+    final selectedSegment = useState<UuidValue?>(UuidValue.fromString("seg1"));
     final scribbleController = useState(ScribbleNotifier());
     final ScrollController scrollController = useScrollController();
 
-    final svgXmlList = useState<List<String>>([]);
+    final svgXmlList = useState<List<SegmentEntity>>([]);
 
     final asyncGetHeadLine = ref.watch(ListHeadLineControllerProvider(
       lectureId: UuidValue.fromString("lec11"),
@@ -73,26 +77,55 @@ class LectureScreen extends HookConsumerWidget {
     final asyncGetMaterial = ref.watch(GetMaterialListControllerProvider(
       lectureId: UuidValue.fromString("lec11"),
     ));
+    final postController = ref.read(postMessageProvider.notifier);
 
     final chatToDisplay = useState<List<types.TextMessage>>(mockMessages);
 
     final chatListAsync = ref.watch(ListChatControllerProvider(
-      userId: UuidValue.fromString("chat11"),
+      userId: UuidValue.fromString("user1"),
       lectureId: UuidValue.fromString("lec11"),
     ));
+
+    print("chatListAsync: ${chatListAsync.valueOrNull}");
+
+    useEffect(() {
+      scribbleController.value.setStrokeWidth(1.0);
+      return null;
+    }, []);
+
+    // 最初のチャットを表示
+    useEffect(() {
+      final firstChatEntity = chatListAsync.valueOrNull?.first;
+      if (firstChatEntity != null) {
+        chatToDisplay.value = firstChatEntity.messages.map((messageEntity) {
+          final message = types.TextMessage(
+            author: mockUser,
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            id: const Uuid().v4(),
+            text: messageEntity.message, // message.textを使用
+          );
+          return message;
+        }).toList();
+      } else {
+        chatToDisplay.value = [];
+      }
+      return null;
+    }, [selectedSegment, chatListAsync.valueOrNull]);
 
     useEffect(() {
       switch (asyncGetMaterial) {
         case AsyncData(:final value):
           if (value.isNotEmpty) {
             svgXmlList.value = value.map((material) {
-              return '''
+              return material.copyWith(
+                content: '''
                 <html>
                   <body style="margin: 0; padding: 0;">
                     ${material.content} <!-- SVGデータを挿入 -->
                   </body>
                 </html>
-              ''';
+              ''',
+              );
             }).toList();
           }
           break;
@@ -104,32 +137,42 @@ class LectureScreen extends HookConsumerWidget {
       return null;
     }, [asyncGetMaterial]);
 
+    void handleSendPressed(types.PartialText message, WidgetRef ref,
+        ValueNotifier<List<types.TextMessage>> chatToDisplay) async {
+      final newMessage = types.TextMessage(
+        author: mockUser,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: const Uuid().v4(),
+        text: message.text,
+      );
+
+      final bool hasMatch = svgXmlList.value.any(
+        (segment) => segment.id == selectedSegment.value,
+      );
+
+      final chatId = hasMatch ? selectedSegment.value : null;
+
+      try {
+        await postController.post(
+            userId: UuidValue.fromString("user1"),
+            lectureId: UuidValue.fromString("lec11"),
+            chatId: UuidValue.fromString("chat1"),
+            message: message.text);
+
+        chatToDisplay.value = [...chatToDisplay.value, newMessage];
+      } catch (error) {}
+    }
+
     final mediaQueryData =
         MediaQueryData.fromView(WidgetsBinding.instance.window);
     final screenHeight = mediaQueryData.size.height;
-    final screenWidth = mediaQueryData.size.width;
-
-    void scrollDown() {
-      scrollController.animateTo(
-        scrollController.offset + screenHeight / 2,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-
-    void scrollUp() {
-      scrollController.animateTo(
-        scrollController.offset - screenHeight / 2,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
+    final screenWidth = mediaQueryData.size.width - 700;
 
     double totalHeight = 0;
     for (var svgXml in svgXmlList.value) {
       final viewBoxMatch =
           RegExp(r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
-              .firstMatch(svgXml);
+              .firstMatch(svgXml.content);
       double? svgHeight;
 
       if (viewBoxMatch != null) {
@@ -150,6 +193,9 @@ class LectureScreen extends HookConsumerWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () => const HomeRoute().go(context)),
         title: const Text('Lecture'),
         actions: [
           IconButton(
@@ -225,7 +271,7 @@ class LectureScreen extends HookConsumerWidget {
                                               svgXmlList.value.map((svgXml) {
                                             final viewBoxMatch = RegExp(
                                                     r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
-                                                .firstMatch(svgXml);
+                                                .firstMatch(svgXml.content);
                                             double? svgHeight;
 
                                             if (viewBoxMatch != null) {
@@ -244,9 +290,8 @@ class LectureScreen extends HookConsumerWidget {
                                                 final webViewWidth =
                                                     screenWidth * 0.9;
 
-                                                svgHeight = webViewWidth *
-                                                    aspectRatio /
-                                                    2;
+                                                svgHeight =
+                                                    webViewWidth * aspectRatio;
                                               }
                                             }
 
@@ -259,7 +304,7 @@ class LectureScreen extends HookConsumerWidget {
                                                           .unrestricted)
                                                   ..loadRequest(
                                                     Uri.dataFromString(
-                                                      svgXml,
+                                                      svgXml.content,
                                                       mimeType: 'text/html',
                                                       encoding:
                                                           Encoding.getByName(
@@ -267,21 +312,21 @@ class LectureScreen extends HookConsumerWidget {
                                                     ),
                                                   );
 
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 24.0,
-                                                        horizontal: 16.0),
-                                                width: screenWidth,
-                                                height: svgHeight,
-                                                child: WebViewWidget(
-                                                    controller:
-                                                        webViewController),
-                                              ),
+                                            return SegmentCard(
+                                              webViewController:
+                                                  webViewController,
+                                              screenWidth: screenWidth,
+                                              svgHeight: svgHeight,
+                                              audioUrl: Uri.parse(
+                                                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
+                                              onSelect: () {},
+                                              isSelected:
+                                                  selectedSegment.value ==
+                                                      svgXml.id,
+                                              hasMessage: dataList.any(
+                                                  (chatEntity) =>
+                                                      chatEntity.segmentId ==
+                                                      svgXml.id),
                                             );
                                           }).toList(),
                                         ),
@@ -292,26 +337,11 @@ class LectureScreen extends HookConsumerWidget {
                                               notifier:
                                                   scribbleController.value,
                                               drawPen: true,
+                                              simulatePressure: false,
                                             ),
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 100,
-                                    right: 20,
-                                    child: FloatingActionButton(
-                                      onPressed: scrollUp,
-                                      child: const Icon(Icons.arrow_upward),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 20,
-                                    right: 20,
-                                    child: FloatingActionButton(
-                                      onPressed: scrollDown,
-                                      child: const Icon(Icons.arrow_downward),
                                     ),
                                   ),
                                 ],
@@ -335,7 +365,8 @@ class LectureScreen extends HookConsumerWidget {
                     isSidebarOpen: isRightSidebarOpen.value,
                     messages: chatToDisplay.value,
                     user: mockUser,
-                    onSendPressed: handleSendPressed,
+                    onSendPressed: (message) =>
+                        handleSendPressed(message, ref, chatToDisplay),
                     onAttachmentPressed: handleAttachmentPressed,
                   )
                 : null,
@@ -389,6 +420,22 @@ class RightSidebarContent extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isRightSidebarOpen = useState(isSidebarOpen);
+    final messageController = useState<List<types.Message>>([]);
+
+    // ScrollControllerを使用
+    final scrollController = useScrollController();
+
+    useEffect(() {
+      messageController.value = List<types.Message>.from(messages)
+        ..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+        }
+      });
+      return null;
+    }, [messages]);
 
     return AnimatedContainer(
       width: isRightSidebarOpen.value ? 300 : 0,
@@ -397,12 +444,13 @@ class RightSidebarContent extends HookConsumerWidget {
       color: Colors.grey[200],
       child: isRightSidebarOpen.value
           ? Chat(
-              messages: messages,
+              messages: messageController.value,
               onSendPressed: onSendPressed,
               onAttachmentPressed: onAttachmentPressed,
               user: user,
               showUserAvatars: true,
               showUserNames: true,
+              // scrollController: scrollController, // ScrollControllerを渡す
             )
           : null,
     );
