@@ -15,7 +15,7 @@ type Segment struct {
 	Prev        string
 	Next        string
 	Content     string
-	Voice       []byte
+	Voice       string
 	Script      string
 	StructureID string
 	CreatedAt   sql.NullTime
@@ -30,7 +30,7 @@ type SegmentsLocal struct {
 	Prev        string
 	Next        string
 	Content     string
-	Voice       []byte
+	Voice       string
 	Script      string
 	StructureID string
 	CreatedAt   sql.NullTime

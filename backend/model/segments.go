@@ -2,7 +2,7 @@ package model
 
 type Material struct {
 	Segment_id string `json:"segment_id"`
-	Voice []byte `json:"voice"`
+	Voice string `json:"voice"`
 	Content string `json:"content"`
 }
 
