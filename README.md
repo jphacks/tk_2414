@@ -1,6 +1,6 @@
 # サンプル（プロダクト名）
 
-[![FairEdu](image/FairEdu_logo.png)
+[![FairEdu](image/FairEdu_logo_v2.png)
 
 ## 製品概要
 ### 背景 (製品開発のきっかけ、課題等）
