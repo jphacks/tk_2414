@@ -119,27 +119,24 @@ class PostMessage extends _$PostMessage {
   @override
   Future<void> build() async {}
 
-  Future<bool> post({
+  Future<UuidValue> post({
     required UuidValue userId,
     required UuidValue lectureId,
     required UuidValue? chatId,
     required String message,
   }) async {
-    print('post');
     final messageUseCase = ref.read(postMessageUseCaseProvider);
-    print('post2');
 
     state = const AsyncValue.loading();
 
-    print('送信');
-
-    state = await AsyncValue.guard(() async {
-      await messageUseCase.execute(
+    try {
+      final chat = await messageUseCase.execute(
         userId: userId,
         lectureId: lectureId,
         chatId: chatId,
         message: message,
       );
+
       await ref
           .read(listChatControllerProvider(
             userId: userId,
@@ -150,10 +147,13 @@ class PostMessage extends _$PostMessage {
             lectureId: lectureId,
           );
 
-      print("ok");
-    });
-    print(state is AsyncData);
-    return state is AsyncData;
+      state = const AsyncValue.data(null);
+
+      return chat;
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
+      rethrow;
+    }
   }
 }
 

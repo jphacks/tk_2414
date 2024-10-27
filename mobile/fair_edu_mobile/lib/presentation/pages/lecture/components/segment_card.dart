@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SegmentCard extends HookConsumerWidget {
@@ -38,23 +37,23 @@ class SegmentCard extends HookConsumerWidget {
               controller: webViewController,
             ),
           ),
-          Positioned(
-            top: 12,
-            right: 12,
-            child: hasMessage
-                ? IconButton(
-                    onPressed: () {
-                      onSelect();
-                    },
-                    icon: const PhosphorIcon(
-                      PhosphorIconsBold.chat,
-                      size: 24,
-                    ),
-                  )
-                : const SizedBox(
-                    width: 24,
-                  ),
-          ),
+          // Positioned(
+          //   top: 12,
+          //   right: 12,
+          //   child: hasMessage
+          //       ? IconButton(
+          //           onPressed: () {
+          //             onSelect();
+          //           },
+          //           icon: const PhosphorIcon(
+          //             PhosphorIconsBold.chat,
+          //             size: 24,
+          //           ),
+          //         )
+          //       : const SizedBox(
+          //           width: 24,
+          //         ),
+          // ),
         ],
       ),
     );

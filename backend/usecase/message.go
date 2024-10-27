@@ -6,6 +6,7 @@ import (
 	"fairedu/model"
 	"fairedu/util"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -34,6 +35,8 @@ func (u *messageUsecase) ProcessMessage(ctx context.Context, m model.Message, le
 	if m.ChatID == "" {
 		m.ChatID = uuid.New().String()
 		tags, err := u.dao_s.GetSegmentTagsByLectureID(ctx, lecture_id)
+		log.Println("tags",tags)
+		log.Println("lecture_id",lecture_id)
 		if err != nil {
 			return nil, err
 		}

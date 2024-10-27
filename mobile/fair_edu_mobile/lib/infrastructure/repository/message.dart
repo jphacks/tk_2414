@@ -3,6 +3,7 @@ import 'package:fair_edu_mobile/domain/model/entity/message.dart';
 import 'package:fair_edu_mobile/domain/model/utils/utils.dart';
 import 'package:fair_edu_mobile/domain/repository/message.dart';
 import 'package:fairedu_client/api.dart';
+import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_value.dart';
 
 class MessageRepository implements IMessageRepository {
@@ -21,10 +22,11 @@ class MessageRepository implements IMessageRepository {
       chatId.uuid,
       lectureId.uuid,
     );
-    print('ChatIdList: $chatIdList');
+
     if (chatIdList == null || chatIdList.isEmpty) {
       return [];
     }
+
     return chatIdList.map((chat) {
       return ChatEntity(
         chatId: UuidValue.fromString(chat.chatId ?? ''),
@@ -64,18 +66,21 @@ class MessageRepository implements IMessageRepository {
   }
 
   @override
-  Future<void> createChat({
+  Future<UuidValue> createChat({
     required UuidValue userId,
     required UuidValue lectureId,
     required UuidValue? chatId,
     required String message,
   }) async {
-    await _chatClient.processMessage(
-        userId.uuid,
+    print("postchatId: $chatId");
+    final chat = await _chatClient.processMessage(
         lectureId.uuid,
+        userId.uuid,
         ProcessMessageRequest(
           chatId: chatId?.uuid,
           message: message,
         ));
+
+    return UuidValue.fromString(chat?.userMessage?.chatId ?? '');
   }
 }

@@ -14,7 +14,7 @@ abstract interface class IMessageRepository {
     required UuidValue chatId,
   });
 
-  Future<void> createChat({
+  Future<UuidValue> createChat({
     required UuidValue userId,
     required UuidValue lectureId,
     required UuidValue? chatId,

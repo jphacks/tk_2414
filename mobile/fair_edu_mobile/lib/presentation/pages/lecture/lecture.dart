@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/model/entity/head_line.dart';
 import 'package:fair_edu_mobile/domain/model/entity/segment.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/components/audio_play_dialog.dart';
@@ -12,36 +13,37 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:scribble/scribble.dart';
 import 'package:uuid/uuid.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 const types.User mockUser = types.User(id: 'user-1', firstName: 'user');
-final List<types.TextMessage> mockMessages = [
-  types.TextMessage(
-    author: const types.User(id: 'user-2', firstName: 'Support Agent'),
-    createdAt: DateTime.now().millisecondsSinceEpoch - 5000,
-    id: const Uuid().v4(),
-    text: 'I have a question about my lecture notes.',
-  ),
-  types.TextMessage(
-    author: const types.User(id: 'user-1', firstName: 'John'),
-    createdAt: DateTime.now().millisecondsSinceEpoch + 10000,
-    id: const Uuid().v4(),
-    text: 'Hello! How can I assist you today?',
-  ),
-];
+// final List<types.TextMessage> mockMessages = [
+//   types.TextMessage(
+//     author: const types.User(id: 'user-2', firstName: 'Support Agent'),
+//     createdAt: DateTime.now().millisecondsSinceEpoch - 5000,
+//     id: const Uuid().v4(),
+//     text: 'I have a question about my lecture notes.',
+//   ),
+//   types.TextMessage(
+//     author: const types.User(id: 'user-1', firstName: 'John'),
+//     createdAt: DateTime.now().millisecondsSinceEpoch + 10000,
+//     id: const Uuid().v4(),
+//     text: 'Hello! How can I assist you today?',
+//   ),
+// ];
 
-void handleSendPressed(types.PartialText message) {
-  final newMessage = types.TextMessage(
-    author: mockUser,
-    createdAt: DateTime.now().millisecondsSinceEpoch,
-    id: const Uuid().v4(),
-    text: message.text,
-  );
+// void handleSendPressed(types.PartialText message) {
+//   final newMessage = types.TextMessage(
+//     author: mockUser,
+//     createdAt: DateTime.now().millisecondsSinceEpoch,
+//     id: const Uuid().v4(),
+//     text: message.text,
+//   );
 
-  print('Message sent: ${newMessage.text}');
-}
+//   print('Message sent: ${newMessage.text}');
+// }
 
 void handleAttachmentPressed() {
   print('Attachment button pressed');
@@ -65,7 +67,10 @@ class LectureScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLeftSidebarOpen = useState(true);
     final isRightSidebarOpen = useState(true);
-    final selectedSegment = useState<UuidValue?>(UuidValue.fromString("seg1"));
+    // final selectedSegment = useState<UuidValue?>(UuidValue.fromString("seg1"));
+    final selectedSegment = useState<UuidValue?>(UuidValue.fromString("null"));
+    final selectedChat = useState<UuidValue?>(UuidValue.fromString("null"));
+
     final scribbleController = useState(ScribbleNotifier());
     final ScrollController scrollController = useScrollController();
 
@@ -79,7 +84,7 @@ class LectureScreen extends HookConsumerWidget {
     ));
     final postController = ref.read(postMessageProvider.notifier);
 
-    final chatToDisplay = useState<List<types.TextMessage>>(mockMessages);
+    final chatToDisplay = useState<List<types.TextMessage>>([]);
 
     final chatListAsync = ref.watch(ListChatControllerProvider(
       userId: UuidValue.fromString("user1"),
@@ -93,24 +98,29 @@ class LectureScreen extends HookConsumerWidget {
       return null;
     }, []);
 
-    // 最初のチャットを表示
     useEffect(() {
-      final firstChatEntity = chatListAsync.valueOrNull?.first;
-      if (firstChatEntity != null) {
-        chatToDisplay.value = firstChatEntity.messages.map((messageEntity) {
-          final message = types.TextMessage(
-            author: mockUser,
-            createdAt: DateTime.now().millisecondsSinceEpoch,
-            id: const Uuid().v4(),
-            text: messageEntity.message, // message.textを使用
-          );
-          return message;
-        }).toList();
-      } else {
-        chatToDisplay.value = [];
-      }
+      final selectedChat = chatListAsync.valueOrNull?.firstWhere(
+          (chatEntity) => chatEntity.segmentId == selectedSegment.value,
+          orElse: () => ChatEntity(
+                chatId: UuidValue.fromString(""),
+                segmentId: UuidValue.fromString(""),
+                messages: [],
+              ));
+
+      chatToDisplay.value = selectedChat != null
+          ? selectedChat.messages.map((messageEntity) {
+              final message = types.TextMessage(
+                author: mockUser,
+                createdAt: DateTime.now().millisecondsSinceEpoch,
+                id: const Uuid().v4(),
+                text: messageEntity.message, // message.textを使用
+              );
+              return message;
+            }).toList()
+          : [];
+
       return null;
-    }, [selectedSegment, chatListAsync.valueOrNull]);
+    }, [selectedSegment.value]);
 
     useEffect(() {
       switch (asyncGetMaterial) {
@@ -150,14 +160,24 @@ class LectureScreen extends HookConsumerWidget {
         (segment) => segment.id == selectedSegment.value,
       );
 
-      final chatId = hasMatch ? selectedSegment.value : null;
+      final selectedChat = chatListAsync.valueOrNull?.firstWhere(
+          (chatEntity) => chatEntity.segmentId == selectedSegment.value,
+          orElse: () => ChatEntity(
+                chatId: UuidValue.fromString(""),
+                segmentId: UuidValue.fromString(""),
+                messages: [],
+              ));
+
+      final chatId = hasMatch ? selectedChat?.chatId : null;
 
       try {
-        await postController.post(
+        final newId = await postController.post(
             userId: UuidValue.fromString("user1"),
             lectureId: UuidValue.fromString("lec11"),
-            chatId: UuidValue.fromString("chat1"),
+            chatId: chatId,
             message: message.text);
+
+        selectedSegment.value = newId;
 
         chatToDisplay.value = [...chatToDisplay.value, newMessage];
       } catch (error) {}
@@ -285,7 +305,7 @@ class LectureScreen extends HookConsumerWidget {
 
                                           return Padding(
                                             padding: EdgeInsets.only(
-                                                bottom: svgHeight - 32),
+                                                bottom: svgHeight - 28),
                                             child: AudioPlayButton(
                                               url: Uri.parse(svgXml.voiceUrl),
                                             ),
@@ -368,8 +388,7 @@ class LectureScreen extends HookConsumerWidget {
                                             // Scribbleを最前面に表示
                                             Positioned.fill(
                                               child: SizedBox(
-                                                height:
-                                                    totalHeight, // 全体の高さに合わせてScribbleを設定
+                                                height: totalHeight,
                                                 child: Scribble(
                                                   notifier:
                                                       scribbleController.value,
@@ -380,6 +399,62 @@ class LectureScreen extends HookConsumerWidget {
                                             ),
                                           ],
                                         ),
+                                      ),
+                                      Column(
+                                        children:
+                                            svgXmlList.value.map((svgXml) {
+                                          final viewBoxMatch = RegExp(
+                                                  r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
+                                              .firstMatch(svgXml.content);
+                                          double? svgHeight;
+
+                                          if (viewBoxMatch != null) {
+                                            final widthInViewBox =
+                                                double.tryParse(
+                                                    viewBoxMatch.group(3)!);
+                                            final heightInViewBox =
+                                                double.tryParse(
+                                                    viewBoxMatch.group(4)!);
+
+                                            if (widthInViewBox != null &&
+                                                heightInViewBox != null) {
+                                              final aspectRatio =
+                                                  heightInViewBox /
+                                                      widthInViewBox;
+                                              final webViewWidth =
+                                                  screenWidth * 0.9;
+
+                                              svgHeight =
+                                                  webViewWidth * aspectRatio;
+                                            }
+                                          }
+
+                                          svgHeight ??= 300;
+                                          final hasMessage = dataList.any(
+                                              (chatEntity) =>
+                                                  chatEntity.segmentId ==
+                                                  svgXml.id);
+
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                                bottom: svgHeight - 28),
+                                            child: hasMessage
+                                                ? IconButton(
+                                                    onPressed: () {
+                                                      print('chat pressed');
+                                                      selectedSegment.value =
+                                                          svgXml.id;
+                                                    },
+                                                    icon: const PhosphorIcon(
+                                                      PhosphorIconsRegular.chat,
+                                                    ),
+                                                  )
+                                                : const SizedBox(
+                                                    width: 48,
+                                                    height: 48,
+                                                  ),
+                                          );
+                                        }).toList(),
                                       ),
                                     ],
                                   ),
