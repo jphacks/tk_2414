@@ -18,32 +18,8 @@ import 'package:scribble/scribble.dart';
 import 'package:uuid/uuid.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-const types.User mockUser = types.User(id: 'user-1', firstName: 'user');
-// final List<types.TextMessage> mockMessages = [
-//   types.TextMessage(
-//     author: const types.User(id: 'user-2', firstName: 'Support Agent'),
-//     createdAt: DateTime.now().millisecondsSinceEpoch - 5000,
-//     id: const Uuid().v4(),
-//     text: 'I have a question about my lecture notes.',
-//   ),
-//   types.TextMessage(
-//     author: const types.User(id: 'user-1', firstName: 'John'),
-//     createdAt: DateTime.now().millisecondsSinceEpoch + 10000,
-//     id: const Uuid().v4(),
-//     text: 'Hello! How can I assist you today?',
-//   ),
-// ];
-
-// void handleSendPressed(types.PartialText message) {
-//   final newMessage = types.TextMessage(
-//     author: mockUser,
-//     createdAt: DateTime.now().millisecondsSinceEpoch,
-//     id: const Uuid().v4(),
-//     text: message.text,
-//   );
-
-//   print('Message sent: ${newMessage.text}');
-// }
+const types.User mockUser = types.User(id: 'user', firstName: 'user');
+const types.User mockBot = types.User(id: 'bot', firstName: 'bot');
 
 void handleAttachmentPressed() {
   print('Attachment button pressed');
@@ -100,17 +76,21 @@ class LectureScreen extends HookConsumerWidget {
 
     useEffect(() {
       final selectedChat = chatListAsync.valueOrNull?.firstWhere(
-          (chatEntity) => chatEntity.segmentId == selectedSegment.value,
-          orElse: () => ChatEntity(
-                chatId: UuidValue.fromString(""),
-                segmentId: UuidValue.fromString(""),
-                messages: [],
-              ));
+        (chatEntity) => chatEntity.segmentId == selectedSegment.value,
+        orElse: () => ChatEntity(
+          chatId: UuidValue.fromString(""),
+          segmentId: UuidValue.fromString(""),
+          messages: [],
+        ),
+      );
 
       chatToDisplay.value = selectedChat != null
           ? selectedChat.messages.map((messageEntity) {
+              // isUserがtrueならmockUser、falseならmockBotをauthorに設定
+              final author = messageEntity.isUser ? mockUser : mockBot;
+
               final message = types.TextMessage(
-                author: mockUser,
+                author: author, // authorを動的に設定
                 createdAt: DateTime.now().millisecondsSinceEpoch,
                 id: const Uuid().v4(),
                 text: messageEntity.message, // message.textを使用
@@ -121,6 +101,30 @@ class LectureScreen extends HookConsumerWidget {
 
       return null;
     }, [selectedSegment.value]);
+
+    // useEffect(() {
+    //   final selectedChat = chatListAsync.valueOrNull?.firstWhere(
+    //       (chatEntity) => chatEntity.segmentId == selectedSegment.value,
+    //       orElse: () => ChatEntity(
+    //             chatId: UuidValue.fromString(""),
+    //             segmentId: UuidValue.fromString(""),
+    //             messages: [],
+    //           ));
+
+    //   chatToDisplay.value = selectedChat != null
+    //       ? selectedChat.messages.map((messageEntity) {
+    //           final message = types.TextMessage(
+    //             author: mockUser,
+    //             createdAt: DateTime.now().millisecondsSinceEpoch,
+    //             id: const Uuid().v4(),
+    //             text: messageEntity.message, // message.textを使用
+    //           );
+    //           return message;
+    //         }).toList()
+    //       : [];
+
+    //   return null;
+    // }, [selectedSegment.value]);
 
     useEffect(() {
       switch (asyncGetMaterial) {
