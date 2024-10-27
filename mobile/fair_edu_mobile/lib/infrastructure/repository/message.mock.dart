@@ -2,6 +2,7 @@ import 'package:fair_edu_mobile/domain/model/entity/chat.dart';
 import 'package:fair_edu_mobile/domain/model/entity/message.dart';
 import 'package:fair_edu_mobile/domain/repository/message.dart';
 import 'package:fair_edu_mobile/infrastructure/data/mock/fake.dart';
+import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_value.dart';
 
 class MockMessageRepository implements IMessageRepository {
@@ -34,12 +35,12 @@ class MockMessageRepository implements IMessageRepository {
   }
 
   @override
-  Future<void> createChat({
+  Future<UuidValue> createChat({
     required UuidValue userId,
     required UuidValue lectureId,
     required UuidValue? chatId,
     required String message,
   }) async {
-    return;
+    return _faker.getUuidValue();
   }
 }

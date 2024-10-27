@@ -6,23 +6,23 @@ TextStyle getFontSize(HeadType type, AppThemeData appTheme) {
   switch (type) {
     case HeadType.h1:
       return appTheme.textTheme.labelMd.copyWith(
-        fontSize: 24,
+        fontSize: 14,
       );
     case HeadType.h2:
       return appTheme.textTheme.labelMd.copyWith(
-        fontSize: 20,
+        fontSize: 12,
       );
     case HeadType.h3:
       return appTheme.textTheme.bodyMd.copyWith(
-        fontSize: 20,
+        fontSize: 10,
       );
     case HeadType.h4:
       return appTheme.textTheme.bodyMd.copyWith(
-        fontSize: 16,
+        fontSize: 12,
       );
     case HeadType.h5:
-      return const TextStyle(fontSize: 12);
-    default:
       return const TextStyle(fontSize: 16);
+    default:
+      return const TextStyle(fontSize: 12);
   }
 }

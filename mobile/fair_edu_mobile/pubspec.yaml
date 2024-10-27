@@ -59,6 +59,9 @@ dependencies:
       url: git@github.com:doss-eeic/2024-07-scribble.git
       ref: main
 
+  audioplayers: 6.1.0
+  audio_session: 0.1.21
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

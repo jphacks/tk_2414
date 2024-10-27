@@ -340,7 +340,7 @@ class _GetMaterialListControllerProviderElement
 }
 
 String _$listChatControllerHash() =>
-    r'70af203f147de7a3b1e76a7c34f79ac3d04a1fb5';
+    r'7d895f55c143afe4037f29a46218e43f4e9ad6e8';
 
 abstract class _$ListChatController
     extends BuildlessAutoDisposeAsyncNotifier<List<ChatEntity>> {
@@ -514,7 +514,7 @@ class _ListChatControllerProviderElement
   UuidValue get lectureId => (origin as ListChatControllerProvider).lectureId;
 }
 
-String _$postMessageHash() => r'beaf327dd7bc688838b3f30bc96b54bb8161cbbe';
+String _$postMessageHash() => r'7e78c0c01e2c58a2f458149615acf8a922ba72b4';
 
 /// See also [PostMessage].
 @ProviderFor(PostMessage)

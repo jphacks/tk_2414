@@ -4,7 +4,7 @@ import 'package:fair_edu_mobile/helper/logger.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class IPostMessageUseCase {
-  Future<void> execute({
+  Future<UuidValue> execute({
     required UuidValue userId,
     required UuidValue lectureId,
     required UuidValue? chatId,
@@ -20,7 +20,7 @@ class PostMessageUseCase implements IPostMessageUseCase {
   final IMessageRepository _messageRepository;
 
   @override
-  Future<void> execute({
+  Future<UuidValue> execute({
     required UuidValue userId,
     required UuidValue lectureId,
     required UuidValue? chatId,
