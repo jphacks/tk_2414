@@ -59,6 +59,41 @@ class ListChatController extends _$ListChatController {
   }
 }
 
+@Riverpod(dependencies: [
+  postMessageUseCase,
+])
+class PostMessage extends _$PostMessage {
+  @override
+  Future<void> build() async {}
+
+  Future<bool> post({
+    required UuidValue userId,
+    required UuidValue lectureId,
+    required UuidValue? chatId,
+    required String message,
+  }) async {
+    print('post');
+    final messageUseCase = ref.read(postMessageUseCaseProvider);
+    print('post2');
+
+    state = const AsyncValue.loading();
+
+    print('送信');
+
+    state = await AsyncValue.guard(() async {
+      await messageUseCase.execute(
+        userId: userId,
+        lectureId: lectureId,
+        chatId: chatId,
+        message: message,
+      );
+      print("ok");
+    });
+    print(state is AsyncData);
+    return state is AsyncData;
+  }
+}
+
 // @Riverpod(dependencies: [])
 // class SelectMessages extends _$SelectMessages {
 //   @override
@@ -85,6 +120,6 @@ class ListChatController extends _$ListChatController {
 //     required UuidValue chatId,
 //     required UuidValue lectureId,
 //   }) async {
-//     state = 
+//     state =
 //   }
 // }

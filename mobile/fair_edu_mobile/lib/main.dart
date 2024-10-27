@@ -1,7 +1,4 @@
 import 'package:fair_edu_mobile/app.dart';
-import 'package:fair_edu_mobile/infrastructure/data/mock/fake.dart';
-import 'package:fair_edu_mobile/infrastructure/provider.dart';
-import 'package:fair_edu_mobile/infrastructure/repository/message.mock.dart';
 import 'package:fair_edu_mobile/presentation/library/riverpod/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,8 +29,8 @@ Future<void> main() async {
   );
 
   runApp(
-    ProviderScope(
-      observers: const [
+    const ProviderScope(
+      observers: [
         LogProviderObserver(),
       ],
       overrides: [
@@ -41,10 +38,10 @@ Future<void> main() async {
         // databaseProvider.overrideWithValue(database),
         // lectureRepositoryProvider.overrideWithValue(
         //     MockLectureRepository(faker: defaultCustomFaker)),
-        messageRepositoryProvider.overrideWithValue(
-            MockMessageRepository(faker: defaultCustomFaker)),
+        // messageRepositoryProvider.overrideWithValue(
+        // MockMessageRepository(faker: defaultCustomFaker)),
       ],
-      child: const FairEduApp(),
+      child: FairEduApp(),
     ),
   );
 }
