@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: User Authentication API
+  version: 1.0.0
+  description: API for user authentication using Firebase email and password.
+
+paths:
+  /signup:
+    post:
+      summary: User signup with email and password
+      operationId: signupUser
+      requestBody:
+        description: User signup information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - name
+                - email
+                - password
+      responses:
+        '201':
+          description: User successfully created
+        '400':
+          description: Invalid input data
+
+  /login:
+    post:
+      summary: User login with email and password
+      operationId: loginUser
+      requestBody:
+        description: User login information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '400':
+          description: Invalid email or password

@@ -1,0 +1,67 @@
+openapi: 3.0.0
+info:
+  title: Material API
+  version: 1.0.0
+
+paths:
+  /material/{user_id}:
+    post:
+      summary: Save material
+      operationId: saveMaterial
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  segment_id:
+                    type: string
+                  content:
+                    type: string
+      responses:
+        '200':
+          description: Material saved successfully
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal server error
+
+  /material/{lecture_id}:
+    get:
+      summary: Get materials for lecture
+      operationId: getMaterialsForLecture
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Materials retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    segment_id:
+                      type: string
+                    voice:
+                      type: string
+                    content:
+                      type: string
+        '400':
+          description: Invalid lecture ID
+        '500':
+          description: Internal server error

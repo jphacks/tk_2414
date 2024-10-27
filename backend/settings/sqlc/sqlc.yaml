@@ -1,0 +1,79 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "./courses/query.sql"
+    schema: "./courses/schema.sql"
+    gen:
+      go:
+        package: "courses"
+        out: "../../infra/sqlc/courses"
+  - engine: "postgresql"
+    queries: "./structures/query.sql"
+    schema: "./structures/schema.sql"
+    gen:
+      go:
+        package: "structures"
+        out: "../../infra/sqlc/structures"
+  - engine: "postgresql"
+    queries: "./segments/query.sql"
+    schema: "./segments/schema.sql"
+    gen:
+      go:
+        package: "segments"
+        out: "../../infra/sqlc/segments"
+  - engine: "postgresql"
+    queries: "./tests/query.sql"
+    schema: "./tests/schema.sql"
+    gen:
+      go:
+        package: "tests"
+        out: "../../infra/sqlc/tests"
+  - engine: "postgresql"
+    queries: "./grades/query.sql"
+    schema: "./grades/schema.sql"
+    gen:
+      go:
+        package: "grades"
+        out: "../../infra/sqlc/grades"
+  - engine: "postgresql"
+    queries: "./user_subjects/query.sql"
+    schema: "./user_subjects/schema.sql"
+    gen:
+      go:
+        package: "user_subjects"
+        out: "../../infra/sqlc/user_subjects"
+  - engine: "postgresql"
+    queries: "./subjects/query.sql"
+    schema: "./subjects/schema.sql"
+    gen:
+      go:
+        package: "subjects"
+        out: "../../infra/sqlc/subjects"
+  - engine: "postgresql"
+    queries: "./user_progresses/query.sql"
+    schema: "./user_progresses/schema.sql"
+    gen:
+      go:
+        package: "user_progresses"
+        out: "../../infra/sqlc/user_progresses"
+  - engine: "postgresql"
+    queries: "./chats/query.sql"
+    schema: "./chats/schema.sql"
+    gen:
+      go:
+        package: "chats"
+        out: "../../infra/sqlc/chats"
+  - engine: "postgresql"
+    queries: "./messages/query.sql"
+    schema: "./messages/schema.sql"
+    gen:
+      go:
+        package: "messages"
+        out: "../../infra/sqlc/messages"
+  - engine: "postgresql"
+    queries: "./tests/query.sql"
+    schema: "./tests/schema.sql"
+    gen:
+      go:
+        package: "tests"
+        out: "../../infra/sqlc/tests"

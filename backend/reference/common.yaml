@@ -1,0 +1,51 @@
+openapi: 3.0.0
+
+info:
+  title: common
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8080'
+paths: {}
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+        code:
+          type: string
+      required:
+        - msg
+        - code
+  responses:
+    BadRequest:
+      description: 400 Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: 401 Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: 404 Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: 400 Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: 500 Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
