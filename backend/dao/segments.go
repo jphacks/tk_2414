@@ -6,7 +6,6 @@ import (
 	"fairedu/infra/sqlc/segments"
 	"fairedu/model"
 
-	// "log"
 )
 
 type SegmentsDao interface {

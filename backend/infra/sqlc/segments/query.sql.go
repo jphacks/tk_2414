@@ -43,7 +43,7 @@ FROM ordered_segments
 
 type GetMaterialsForLectureRow struct {
 	SegmentID string
-	Voice     []byte
+	Voice     string
 	Content   string
 }
 
