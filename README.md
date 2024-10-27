@@ -1,6 +1,6 @@
 # サンプル（プロダクト名）
 
-[![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2024/07/JPHACKS2024_ogp.jpg)](https://www.youtube.com/watch?v=DZXUkEj-CSI)
+[![FairEdu](image/FairEdu_logo.png)
 
 ## 製品概要
 ### 背景 (製品開発のきっかけ、課題等）
@@ -81,14 +81,16 @@
 * Voicevox
 
 #### フレームワーク・ライブラリ・モジュール
-* Langchain
-* OpenAI
-* 
+- バックエンド：Go
+- フロントエンド：Flutter
+- LLM：Python(Langchain), OpenAI API
+- データベース：PostgreSQL
 
 #### デバイス
 * タブレット端末
 
 ### 独自技術
 #### ハッカソンで開発した独自機能・技術
-* 独自で開発したものの内容をこちらに記載してください
-* 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
+- 生成AIを用いたプロンプト改善Agentの実装と自己改善ループ、補足情報検索の実装 
+    * commit_id:56b7ddccacf26df61e5944c06f41319cb09441f8
+    * ファイル名: ai/Generate_lesson_script.ipynb
