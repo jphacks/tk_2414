@@ -552,10 +552,12 @@ class RightSidebarContent extends HookConsumerWidget {
     }, [messages]);
 
     return AnimatedContainer(
+      // 背景色
+      // decoration: BoxDecoration(color: Colors.grey[200]),
       width: isRightSidebarOpen.value ? 300 : 0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      color: Colors.grey[200],
+      color: Colors.grey[500],
       child: isRightSidebarOpen.value
           ? Chat(
               messages: messageController.value,
@@ -564,6 +566,10 @@ class RightSidebarContent extends HookConsumerWidget {
               user: user,
               showUserAvatars: true,
               showUserNames: true,
+              theme: const DefaultChatTheme(
+                backgroundColor:
+                    Color.fromARGB(255, 235, 235, 235), // ここで背景色を設定
+              ),
               // scrollController: scrollController, // ScrollControllerを渡す
             )
           : null,
