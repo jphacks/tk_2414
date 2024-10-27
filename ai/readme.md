@@ -2,15 +2,17 @@
 
 ## このディレクトリ内のファイルについて
 
-・**generate_lesson_script.ipynb**   
+- **generate_lesson_script.ipynb**   
 OpenAIのモデルとlangchain,Bingsearch APIを用いた教材の自動作成を行う
 
-・**generate_audiofile.ipynb**   
-上記のコードで作成した原稿のセグメントに対して設定した読み上げスクリプトから音声出力(text-to-speach)を行う。
+- **generate_audiofile.ipynb**   
+上記のコードで作成した原稿のセグメントに対して設定した読み上げスクリプトから音声出力(whisper-large-v2model)を行う。
  
-・**convert_html2png.py**
+- **convert_html2png.py**
 教材をセグメントごとに区切り、それぞれをhtmlを経由しpngデータへと変換することで、フロントやバックエンドの実装しやすい形にする。
 
+- **generate_audio.py**  
+VoiceVoxを用いてテキストの音声出力を行う。
 ## 教材スクリプトの自動作成について
 具体的な教材生成に関する試作や最終案についてはgenerate_lesson_script.ipynb内に書かれているドキュメントを参照してください。
 
@@ -66,7 +68,9 @@ htmlデータはseleniumを用いてスクリーンショットを作成しバ�
 
 
 ## 読み上げ音声の自動作成について
-具体的な教材生成に関する試作や最終案についてはgenerate_audiofile.ipynb内に書かれているドキュメントを参照してください。
+具体的な教材生成に関する試作や最終案についてはgenerate_audiofile.ipynbとgenerate_audio.py内に書かれているドキュメントを参照してください。
 
 今回の最終案については以下のような処理を行います。  
-ToDo: 最終的なフローを記入する
+1. Gemini-1.5-pro-002に完成した原稿を全て入力し、原稿を作成する。
+2. 教材スクリプトの分割と形式変換に含まれるコードを用いてセグメントごとに分割する
+3. OpenAIのwhisperとVoiceVoxを用いて２種類の音声を作成する。
