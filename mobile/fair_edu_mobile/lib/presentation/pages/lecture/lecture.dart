@@ -156,7 +156,7 @@ class LectureScreen extends HookConsumerWidget {
         await postController.post(
             userId: UuidValue.fromString("user1"),
             lectureId: UuidValue.fromString("lec11"),
-            chatId: chatId,
+            chatId: UuidValue.fromString("chat1"),
             message: message.text);
 
         chatToDisplay.value = [...chatToDisplay.value, newMessage];
