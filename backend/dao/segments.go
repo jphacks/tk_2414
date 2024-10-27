@@ -6,7 +6,6 @@ import (
 	"fairedu/infra/sqlc/segments"
 	"fairedu/model"
 
-	"log"
 )
 
 type SegmentsDao interface {
@@ -60,7 +59,6 @@ func (d *segmentsDAO) GetMaterialsForLecture(ctx context.Context, lecture_id str
 	if err != nil {
 		return nil, err
 	}
-	log.Println("lecture_id: ", lecture_id)
 	query := segments.New(tx)
 	rows, err := query.GetMaterialsForLecture(ctx, lecture_id)
 	if err != nil {
@@ -76,7 +74,6 @@ func (d *segmentsDAO) GetMaterialsForLecture(ctx context.Context, lecture_id str
 		}
 		items = append(items, item)
 	}
-	log.Println("items: ", items)
 	return items, nil
 }
 
