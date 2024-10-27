@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -28,24 +27,9 @@ class SegmentCard extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Column(
-            children: [
-              const Gap(12),
-              IconButton(
-                onPressed: () {},
-                icon: const PhosphorIcon(
-                  PhosphorIconsBold.speakerHigh,
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
             width: screenWidth,
             height: svgHeight,
             // 背景色を isSelected に応じて変更
@@ -54,23 +38,22 @@ class SegmentCard extends HookConsumerWidget {
               controller: webViewController,
             ),
           ),
-          Column(
-            children: [
-              const Gap(12),
-              hasMessage
-                  ? IconButton(
-                      onPressed: () {
-                        onSelect();
-                      },
-                      icon: const PhosphorIcon(
-                        PhosphorIconsBold.chat,
-                        size: 24,
-                      ),
-                    )
-                  : const SizedBox(
-                      width: 24,
-                    )
-            ],
+          Positioned(
+            top: 12,
+            right: 12,
+            child: hasMessage
+                ? IconButton(
+                    onPressed: () {
+                      onSelect();
+                    },
+                    icon: const PhosphorIcon(
+                      PhosphorIconsBold.chat,
+                      size: 24,
+                    ),
+                  )
+                : const SizedBox(
+                    width: 24,
+                  ),
           ),
         ],
       ),

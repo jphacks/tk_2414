@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:fair_edu_mobile/domain/model/entity/head_line.dart';
 import 'package:fair_edu_mobile/domain/model/entity/segment.dart';
+import 'package:fair_edu_mobile/presentation/pages/lecture/components/audio_play_dialog.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/components/headLine.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/components/segment_card.dart';
 import 'package:fair_edu_mobile/presentation/pages/lecture/controller.dart';
@@ -243,109 +243,148 @@ class LectureScreen extends HookConsumerWidget {
                           when dataList != null =>
                         Stack(
                           children: [
-                            Listener(
-                              onPointerDown: (event) {
-                                if (event.kind == PointerDeviceKind.touch) {
-                                  scribbleController.value.onPointerDown(event);
-                                }
-                              },
-                              onPointerMove: (event) {
-                                if (event.kind == PointerDeviceKind.touch) {
-                                  scribbleController.value
-                                      .onPointerUpdate(event);
-                                }
-                              },
-                              onPointerUp: (event) {
-                                if (event.kind == PointerDeviceKind.touch) {
-                                  scribbleController.value.onPointerUp(event);
-                                }
-                              },
-                              child: Stack(
-                                children: [
-                                  SingleChildScrollView(
-                                    controller: scrollController,
-                                    child: Stack(
-                                      children: [
-                                        Column(
-                                          children:
-                                              svgXmlList.value.map((svgXml) {
-                                            final viewBoxMatch = RegExp(
-                                                    r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
-                                                .firstMatch(svgXml.content);
-                                            double? svgHeight;
+                            Stack(
+                              children: [
+                                SingleChildScrollView(
+                                  controller: scrollController,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start, // 上揃えにする
+                                    children: [
+                                      // 左側のアイコンを縦に並べるColumn
+                                      Column(
+                                        children:
+                                            svgXmlList.value.map((svgXml) {
+                                          final viewBoxMatch = RegExp(
+                                                  r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
+                                              .firstMatch(svgXml.content);
+                                          double? svgHeight;
 
-                                            if (viewBoxMatch != null) {
-                                              final widthInViewBox =
-                                                  double.tryParse(
-                                                      viewBoxMatch.group(3)!);
-                                              final heightInViewBox =
-                                                  double.tryParse(
-                                                      viewBoxMatch.group(4)!);
+                                          if (viewBoxMatch != null) {
+                                            final widthInViewBox =
+                                                double.tryParse(
+                                                    viewBoxMatch.group(3)!);
+                                            final heightInViewBox =
+                                                double.tryParse(
+                                                    viewBoxMatch.group(4)!);
 
-                                              if (widthInViewBox != null &&
-                                                  heightInViewBox != null) {
-                                                final aspectRatio =
-                                                    heightInViewBox /
-                                                        widthInViewBox;
-                                                final webViewWidth =
-                                                    screenWidth * 0.9;
+                                            if (widthInViewBox != null &&
+                                                heightInViewBox != null) {
+                                              final aspectRatio =
+                                                  heightInViewBox /
+                                                      widthInViewBox;
+                                              final webViewWidth =
+                                                  screenWidth * 0.9;
 
-                                                svgHeight =
-                                                    webViewWidth * aspectRatio;
-                                              }
+                                              svgHeight =
+                                                  webViewWidth * aspectRatio;
                                             }
+                                          }
 
-                                            svgHeight ??= 300;
+                                          svgHeight ??= 300;
 
-                                            final webViewController =
-                                                WebViewController()
-                                                  ..setJavaScriptMode(
-                                                      JavaScriptMode
-                                                          .unrestricted)
-                                                  ..loadRequest(
-                                                    Uri.dataFromString(
-                                                      svgXml.content,
-                                                      mimeType: 'text/html',
-                                                      encoding:
-                                                          Encoding.getByName(
-                                                              'utf-8'),
-                                                    ),
-                                                  );
-
-                                            return SegmentCard(
-                                              webViewController:
-                                                  webViewController,
-                                              screenWidth: screenWidth,
-                                              svgHeight: svgHeight,
-                                              audioUrl: Uri.parse(
-                                                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
-                                              onSelect: () {},
-                                              isSelected:
-                                                  selectedSegment.value ==
-                                                      svgXml.id,
-                                              hasMessage: dataList.any(
-                                                  (chatEntity) =>
-                                                      chatEntity.segmentId ==
-                                                      svgXml.id),
-                                            );
-                                          }).toList(),
-                                        ),
-                                        Positioned.fill(
-                                          child: SizedBox(
-                                            height: totalHeight,
-                                            child: Scribble(
-                                              notifier:
-                                                  scribbleController.value,
-                                              drawPen: true,
-                                              simulatePressure: false,
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                                bottom: svgHeight - 32),
+                                            child: AudioPlayButton(
+                                              url: Uri.parse(svgXml.voiceUrl),
                                             ),
-                                          ),
+                                          );
+                                        }).toList(),
+                                      ),
+
+                                      // 右側のStack: SegmentCardとScribbleを重ねる
+                                      Expanded(
+                                        child: Stack(
+                                          children: [
+                                            // SegmentCardを表示するColumn
+                                            Column(
+                                              children: svgXmlList.value
+                                                  .map((svgXml) {
+                                                final viewBoxMatch = RegExp(
+                                                        r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"')
+                                                    .firstMatch(svgXml.content);
+                                                double? svgHeight;
+
+                                                if (viewBoxMatch != null) {
+                                                  final widthInViewBox =
+                                                      double.tryParse(
+                                                          viewBoxMatch
+                                                              .group(3)!);
+                                                  final heightInViewBox =
+                                                      double.tryParse(
+                                                          viewBoxMatch
+                                                              .group(4)!);
+
+                                                  if (widthInViewBox != null &&
+                                                      heightInViewBox != null) {
+                                                    final aspectRatio =
+                                                        heightInViewBox /
+                                                            widthInViewBox;
+                                                    final webViewWidth =
+                                                        screenWidth * 0.9;
+
+                                                    svgHeight = webViewWidth *
+                                                        aspectRatio;
+                                                  }
+                                                }
+
+                                                svgHeight ??= 300;
+
+                                                final webViewController =
+                                                    WebViewController()
+                                                      ..setJavaScriptMode(
+                                                          JavaScriptMode
+                                                              .unrestricted)
+                                                      ..loadRequest(
+                                                        Uri.dataFromString(
+                                                          svgXml.content,
+                                                          mimeType: 'text/html',
+                                                          encoding: Encoding
+                                                              .getByName(
+                                                                  'utf-8'),
+                                                        ),
+                                                      );
+
+                                                return SegmentCard(
+                                                  webViewController:
+                                                      webViewController,
+                                                  screenWidth: screenWidth,
+                                                  svgHeight: svgHeight,
+                                                  audioUrl: Uri.parse(
+                                                      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
+                                                  onSelect: () {},
+                                                  isSelected:
+                                                      selectedSegment.value ==
+                                                          svgXml.id,
+                                                  hasMessage: dataList.any(
+                                                      (chatEntity) =>
+                                                          chatEntity
+                                                              .segmentId ==
+                                                          svgXml.id),
+                                                );
+                                              }).toList(),
+                                            ),
+                                            // Scribbleを最前面に表示
+                                            Positioned.fill(
+                                              child: SizedBox(
+                                                height:
+                                                    totalHeight, // 全体の高さに合わせてScribbleを設定
+                                                child: Scribble(
+                                                  notifier:
+                                                      scribbleController.value,
+                                                  drawPen: true,
+                                                  simulatePressure: false,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
