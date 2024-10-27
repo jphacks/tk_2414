@@ -93,6 +93,9 @@ ChatGPTだと過去の履歴を辿るのは大変なのでこちらに分があ�
 そのようなサービスは教師の授業動画コンテンツを再生する形になっており、一方的な教育といえます。  
 我々は能動的で双方向的な教育を実現しようとしているのでここに違いがあります。
 
+## 発表資料
+- [HackDay発表用スライド](https://docs.google.com/presentation/d/1F81YJ0al-jGyuK_XpSn17avB6nYb_8SH0yQNTtbvOIo/edit?usp=sharing)
+- [デモ動画](https://www.youtube.com/watch?v=bRDZ9E3mljs&t=1s)
 
 ## 開発技術
 ### 活用した技術
