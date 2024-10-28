@@ -146,4 +146,4 @@
   - commit_id:56b7ddccacf26df61e5944c06f41319cb09441f8
   - ファイル名: ai/Generate_lesson_script.ipynb
 - Fluitter パッケージの scribble の改良
-  - レポジトリ: https://github.com/takumi8420/custom-scribble
+  - レポジトリ: https://github.com/doss-eeic/2024-07-scribble
